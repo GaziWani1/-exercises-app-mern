@@ -7,6 +7,9 @@ import {
 import Login from './components/Login';
 import Home from './components/Home';
 import SignIn from './components/SignIn';
+import { AuthProvider } from './context/AuthProvider';
+import Header from './components/Header';
+import ProtectedRoutes from './context/ProtectedRoutes';
 
 const App = () => {
   const router = createBrowserRouter([
@@ -24,17 +27,21 @@ const App = () => {
     },
     {
       path: '/home',
-      element: <Home />,
+      element: <ProtectedRoutes>
+        <Home />
+      </ProtectedRoutes>
+      
     },
   ]);
 
   return (
-    <main className=' bg-zinc-100 h-auto w-full'>
-      <header className='flex w-full px-20 py-5 bg-white'>
-        <h1 className='text-3xl text-blue-500 font-semibold'>Octopi.health</h1>
-      </header>
-      <RouterProvider router={router} />
+    <AuthProvider>
+    <main className=' bg-zinc-100 min-h-[100vh] w-full pb-5'>
+     <Header />
+      <RouterProvider router={router}
+      ></RouterProvider>
     </main>
+    </AuthProvider>
   );
 };
 

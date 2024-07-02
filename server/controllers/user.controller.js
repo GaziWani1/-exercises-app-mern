@@ -1,8 +1,9 @@
-import { User } from '../models/user.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import bcrypt from 'bcrypt';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import jwt from 'jsonwebtoken';
+import { User } from '../models/user.model.js';
+import Exercise from '../models/exersices.model.js';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -54,6 +55,8 @@ const login = async (req, res) => {
       ],
     });
 
+    console.log(user);
+
     if (!user) {
       throw new ApiError(404, 'User does not exist');
     }
@@ -78,4 +81,33 @@ const login = async (req, res) => {
   }
 };
 
-export { signIn, login };
+const addExercisesToUser = async (req, res) => {
+  const { userId, exerciseId } = req.body;
+
+  try {
+    if (!userId || !exerciseId) {
+      throw new ApiError(400, 'User ID and exercise ID are required');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    const exercise = await Exercise.findById(exerciseId);
+    if (!exercise) {
+      throw new ApiError(404, `Exercise with ID ${exerciseId} not found`);
+    }
+
+    user.exercises.push(exerciseId);
+
+    await user.save();
+
+    return res.status(200).json(new ApiResponse(200, user));
+  } catch (error) {
+    console.error('Error adding exercise to user:', error);
+    throw new ApiError(500, 'Internal server error');
+  }
+};
+
+export { signIn, login, addExercisesToUser };

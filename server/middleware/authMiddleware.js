@@ -13,7 +13,8 @@ const protect = async (req, res, next) => {
       const decode = jwt.verify(token, process.env.JWT_SECRET);
 
       req.user = await User.findById(decode.id).select('-password');
-      next;
+
+      next();
     } catch (error) {
       console.log(error);
       throw new ApiError(401, 'not authorized no token');

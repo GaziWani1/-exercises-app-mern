@@ -1,10 +1,14 @@
 import { Router } from 'express';
-import { addExersice } from '../controllers/exersices.controller.js';
+
 import { protect } from '../middleware/authMiddleware.js';
-import upload from '../middleware/cloudinary.js';
+import {
+  addExercise,
+  getExercises,
+} from '../controllers/exersices.controller.js';
 
 const route = Router();
 
-route.post('/addExersices', protect, upload.array('images', 3), addExersice);
+route.post('/addExersices', protect, addExercise);
+route.get('/getExersices', protect, getExercises);
 
 export default route;
